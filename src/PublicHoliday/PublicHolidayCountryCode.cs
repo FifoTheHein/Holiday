@@ -34,6 +34,8 @@
         /// <summary>Croatia</summary> 
         Hr,
         /// <summary>Ireland</summary> 
+        Hu,
+        /// <summary>Hungary</summary> 
         Ie,
         /// <summary>Italy</summary> 
         It,
