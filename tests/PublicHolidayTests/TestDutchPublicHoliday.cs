@@ -84,5 +84,23 @@ namespace PublicHolidayTests
             var lib = hols.FirstOrDefault(x => x.ObservedDate == may5th);
             Assert.IsNotNull(lib);
         }
+
+        [TestMethod]
+        public void TestIncludeEasterSunday2926()
+        {
+            const int year = 2926;
+            var easter = DutchPublicHoliday.EasterSunday(year);
+
+            // default does not include Easter Sunday in PublicHolidayNames
+            var dutchDefault = new DutchPublicHoliday();
+            var namesWithout = dutchDefault.PublicHolidayNames(year);
+            Assert.IsFalse(namesWithout.ContainsKey(easter));
+
+            // when IncludeEasterSunday is true, Easter Sunday should be present
+            var dutchWith = new DutchPublicHoliday { IncludeEasterSunday = true };
+            var namesWith = dutchWith.PublicHolidayNames(year);
+            Assert.IsTrue(namesWith.ContainsKey(easter));
+            Assert.HasCount(namesWithout.Count + 1, namesWith);
+        }
     }
 }

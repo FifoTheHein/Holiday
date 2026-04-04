@@ -4,10 +4,13 @@ using System.Linq;
 
 namespace PublicHoliday
 {
-	/// <summary>
-	/// Holiday calendar for the Netherlands
-	/// </summary>
-	public class DutchPublicHoliday : PublicHolidayBase
+    /// <summary>
+    /// Holiday calendar for the Netherlands
+    /// </summary>
+    /// <remarks>
+    /// Easter Sunday is a public holiday in the Netherlands, but it is always Sunday (not a normal working day). To include it in <see cref="PublicHolidays"/> set <see cref="IncludeEasterSunday"/> to true.
+    /// </remarks>
+    public class DutchPublicHoliday : PublicHolidayBase
 	{
 		private readonly bool _liberationDayOnlyAtLustrum = false;
 
@@ -33,12 +36,34 @@ namespace PublicHoliday
 			return easterSunday.AddDays(-2);
 		}
 
-		/// <summary>
-		/// Easter Monday 1st Monday after Easter - Paasmaandag
-		/// </summary>
-		/// <param name="year">The year.</param>
-		/// <returns>Date of in the given year.</returns>
-		public static DateTime EasterMonday(int year)
+        /// <summary>
+        /// Easter Sunday / Eerste paasdag
+        /// </summary>
+        /// <param name="year"></param>
+        /// <returns></returns>
+        public static DateTime EasterSunday(int year)
+        {
+            var hol = HolidayCalculator.GetEaster(year);
+            return hol;
+        }
+
+        /// <summary>
+        /// Include Easter Sunday as a public holiday.
+        /// </summary>
+        /// <value>
+        /// Set to <c>true</c> to see Easter Sunday in <see cref="PublicHolidays"/> and <see cref="PublicHolidayNames"/>.
+        /// </value>
+        public bool IncludeEasterSunday
+        {
+            get;
+            set;
+        }
+        /// <summary>
+        /// Easter Monday 1st Monday after Easter - Paasmaandag
+        /// </summary>
+        /// <param name="year">The year.</param>
+        /// <returns>Date of in the given year.</returns>
+        public static DateTime EasterMonday(int year)
 		{
 			var hol = HolidayCalculator.GetEaster(year);
 			hol = hol.AddDays(1);
@@ -199,6 +224,10 @@ namespace PublicHoliday
 			var bHols = new Dictionary<DateTime, string>();
 			bHols.Add(NewYear(year), "Nieuwjaar");
 			DateTime easter = HolidayCalculator.GetEaster(year);
+            if (IncludeEasterSunday)
+            {
+				bHols.Add(easter, "Eerste Paasdag");
+            }
 			bHols.Add(EasterMonday(easter), "Paasmaandag");
 			bHols.Add(KingsDay(year), "Koningsdag");
 			var liberationDay = LiberationDay(year, _liberationDayOnlyAtLustrum);
@@ -237,6 +266,10 @@ namespace PublicHoliday
 				case 3:
 				case 4:
 				case 8:
+                    if (IncludeEasterSunday && EasterSunday(year) == date)
+                    {
+                        return true;
+                    }
 					if (EasterMonday(year) == date)
 						return true;
 					if (KingsDay(year) == date) // Usually April 27, but historically also in August
